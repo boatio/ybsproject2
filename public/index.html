@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+
+        <title>MooMoo.io test sever</title>
+        <style type="text/css">
+            canvas {
+                border: 3px solid black;
+                background-color: rgba(79, 61, 57, 0.74);
+            }
+        </style>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.js'></script>
+    </head>
+
+    <body>
+
+        <canvas id="canvas">
+            <canvas>
+                <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+                <script type="text/javascript">
+                    direclast = direc; 
+                    //킬f12
+                    var Random = function (min, max) {
+                    var ranNum = Math.floor(Math.random()*(max-min+1)) + min;
+                    return ranNum;
+                        }
+                    var socket = io.connect('http://diep3.com/');
+                    var speed = 3;
+                    var canvas = document.querySelector('canvas');
+                    canvas.width  = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    var ctx = canvas.getContext('2d');
+                    // ------------------------------
+
+                    // -----------------------------
+                    var wep = new Image();
+                    wep.src = 'http://moomoo.io/img/weapons/great_axe_1.png';
+                    var playingg = 0;
+                    //이미지 ------------------------------------------
+                    var player = [];
+                    var loger = {};
+                    var yy = {}; //마우스 관련
+                    var y = 300;
+                    var x = 500;
+                    var mouse_x;
+                    var mouse_y;var lag;
+                    var direclast = direc;var t;
+                    var direc = Math.atan2(y - mouse_y, x - mouse_x);
+                    var loer;
+                    /*function move() {
+                        direclast = direc;
+                        // body...
+                        function keydowncheck() {
+                            var result = true;
+                            var keycode = event.keyCode;
+                            if (123 == keycode) { //F12 키코드
+                                result = false;
+                            }
+                            return result;
+                        }
+                        direc = Math.atan2(y - mouse_y, x - mouse_x);
+
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        ctx.beginPath();
+                        ctx.arc(x, y, 25, 0, Math.PI * 2,);
+                        ctx.fill();
+                        ctx.save();
+                        ctx.translate(x, y);
+                        ctx.rotate(direc + Math.PI);
+                        ctx.drawImage(wep, -30, -50, 130, 130);
+                        ctx.restore();
+                        
+                        if(direc != direclast){
+                           // socket.emit('xy',direc);
+                        }
+                    }*/
+                    function move() {
+                        direclast = direc;
+                        // body...
+                        function keydowncheck() {
+                            var result = true;
+                            var keycode = event.keyCode;
+                            if (123 == keycode) { //F12 키코드
+                                result = false;
+                            }
+                            return result;
+                        }
+                        direc = Math.atan2(y - mouse_y, x - mouse_x);
+                        for(t=0;t<loer;t++){
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            ctx.beginPath();
+                            ctx.arc(loger[player[t]].x, loger[player[t]].y, 25, 0, Math.PI * 2,);
+                            ctx.fill();
+                            ctx.save();
+                            ctx.translate(loger[player[t]].x,loger[player[t]].y);
+                            ctx.rotate(direc + Math.PI);
+                            ctx.drawImage(wep, -30, -50, 130, 130);
+                            ctx.restore();
+                            console.log(loer);
+                        }
+                        
+                        
+                        if(direc != direclast){
+                           // socket.emit('xy',direc);
+                        }
+                    }
+                    socket.on('xyr',function(x,y,id){
+                        loger[id] = {x:x , y:y , myid:id};
+                        console.log(loger[id]);   
+                    });
+                    $(function () {
+                        var keypress = {}; // 어떤 키가 눌려 있는지 저장
+                        setInterval(function () { // 주기적으로 검사
+                            if (keypress['87']){
+                                socket.emit('xy',x,y);
+                                y -= speed; // up - w
+                            }
+                            if (keypress['83']) {
+                                socket.emit('xy',x,y);
+                                y += speed; // down - s
+                            }
+                            if (keypress['65']) {
+                                socket.emit('xy',x,y);
+                                x -= speed; // left - a
+                            }
+                            if (keypress['68']){
+                                socket.emit('xy',x,y);
+                                x += speed; // right - d
+                            }
+                            }
+                        , 10); // 매 0.01 초마다 실행
+
+                        $(document).keydown(function (e) { // 어떤 키가 눌렸는지 저장
+                            keypress[
+                                e
+                                    .which
+                                    .toString()
+                            ] = true;
+                        });
+                        $(document).keyup(function (e) { // 눌렸던 키를 해제
+                            keypress[
+                                e
+                                    .which
+                                    .toString()
+                            ] = false;
+                        });
+                    });
+                    //함수들
+                    socket.on('id',function(type,id,playing){
+                        player = type;
+                        loger[player[lag]] = {x:Random(1,500),y:Random(1,500)};
+                        playingg = playing;
+                        loger[player[lag]] = {myid:id};
+                        console.log(player);
+                        loer = playingg + 1;
+                        
+                    });
+                    //함수들
+                    //마우스 이동관련
+                    document.addEventListener("mousemove", mousePositionCheck, false);
+                    function mousePositionCheck(e) {
+                        mouse_x = e.clientX;
+                        mouse_y = e.clientY;
+                      }
+       
+                    move();
+                    setInterval(move, 10);
+                    //이동
+                </script>
+
+            </body>
+        </html>
