@@ -3,7 +3,7 @@ var app = express();var type = [];
 var http = require('http').Server(app);
 var io = require('socket.io')(http);var prot = 80;var ip;
 app.use(express.static('public')); var playing = 0;var loging = null; var id = null;
-http.listen(prot,'58.236.223.208',function () {
+http.listen(prot,ip,function () {
   console.log('sever is on by localhost:3000');
   http.close(function(){http.listen(prot,'58.236.223.208');
 });});
